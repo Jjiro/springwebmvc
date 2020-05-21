@@ -1,14 +1,13 @@
 package com.sda.studysystem.controllers;
 
 import com.sda.studysystem.models.City;
+import com.sda.studysystem.models.County;
 import com.sda.studysystem.services.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -20,84 +19,105 @@ public class CityController {
     private CityService cityService;
 
     @GetMapping("")
-    public String showAllCitys(Model model) {
-        List<City> citys = cityService.getAllCities();
-        model.addAttribute("cities", citys);
-        return "show-all-cities";
+    public String showAllCities(@ModelAttribute("messageType") String messageType, @ModelAttribute("message") String message,
+                                  Model model) {
+        List<City> cities = cityService.getAllCities();
+        model.addAttribute("cities", cities);
+        return "city/city-list";
     }
 
     @GetMapping("/add")
-    public String addCityForm(Model model) {
-        return "add-city";
+    public String addCityForm(@ModelAttribute("city") City ciy, @ModelAttribute("messageType") String messageType,
+                                @ModelAttribute("message") String message) {
+        return "city/city-add";
     }
 
     @PostMapping("/add")
-    public String addCity(City city, Model model) {
-        city.setActive(true);
-        boolean createResult = cityService.createCity(city);
+    public String addCity(City city, RedirectAttributes redirectAttributes) {
+        boolean createResult = false;
+
+        if (isCityValid(city)) {
+            city.setActive(true);
+            createResult = cityService.createCity(city);
+        }
 
         if (createResult) {
-            model.addAttribute("message", "City has been successfully created.");
-            model.addAttribute("messageType", "success");
-            return showAllCitys(model);
+            redirectAttributes.addFlashAttribute("message", "City has been successfully created.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/city/";
         } else {
-            model.addAttribute("city", city);
-            model.addAttribute("message", "Error in creating a city!");
-            model.addAttribute("messageType", "error");
-            return addCityForm(model);
+            redirectAttributes.addFlashAttribute("city", city);
+            redirectAttributes.addFlashAttribute("message", "Error in creating a city!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/city/add";
         }
     }
 
-    @GetMapping("/update")
-    public String updateCityForm(Model model) {
-        return "update-city";
+    @GetMapping("/update/{id}")
+    public String updateCityForm(@PathVariable("id") Long cityId, @RequestParam(value = "city", required = false) City city,
+                                   @ModelAttribute("messageType") String messageType,
+                                   @ModelAttribute("message") String message, Model model) {
+        if (city == null) {
+            model.addAttribute("city", cityService.getById(cityId));
+        }
+
+        return "city/city-update";
     }
 
     @PostMapping("/update/{id}")
-    public String updateCity(@PathVariable("id") Long cityId, City city, Model model) {
-        city.setId(cityId);
-        boolean updateResult = cityService.updateCity(city);
+    public String updateCity(@PathVariable("id") Long cityId, City city, RedirectAttributes redirectAttributes) {
+        boolean updateResult = false;
+
+        if (isCityValid(city)) {
+            city.setId(cityId);
+            updateResult = cityService.updateCity(city);
+        }
 
         if (updateResult) {
-            model.addAttribute("message", "City has been successfully updated.");
-            model.addAttribute("messageType", "success");
-            return showAllCitys(model);
+            redirectAttributes.addFlashAttribute("message", "City has been successfully updated.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/city/";
         } else {
-            model.addAttribute("city", city);
-            model.addAttribute("message", "Error in updating a city!");
-            model.addAttribute("messageType", "error");
-            return updateCityForm(model);
+            redirectAttributes.addAttribute("id", cityId);
+            redirectAttributes.addAttribute("city", city);
+            redirectAttributes.addFlashAttribute("message", "Error in updating a city!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/city/update/{id}";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteCity(@PathVariable("id") Long cityId, Model model) {
+    public String deleteCounty(@PathVariable("id") Long cityId, RedirectAttributes redirectAttributes) {
         boolean deleteResult = cityService.deleteCityById(cityId);
 
         if (deleteResult) {
-            model.addAttribute("message", "City has been successfully deleted.");
-            model.addAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "City has been successfully deleted.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            model.addAttribute("message", "Error in deleting a city!");
-            model.addAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Error in deleting a city!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
-        return showAllCitys(model);
+        return "redirect:/city/";
     }
 
     @GetMapping("/restore/{id}")
-    public String restoreCity(@PathVariable("id") Long cityId, Model model) {
+    public String restoreCounty(@PathVariable("id") Long cityId, RedirectAttributes redirectAttributes) {
         boolean restoreResult = cityService.restoreCityById(cityId);
 
         if (restoreResult) {
-            model.addAttribute("message", "City has been successfully restored.");
-            model.addAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "City has been successfully restored.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            model.addAttribute("message", "Error in restoring a city!");
-            model.addAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Error in restoring a city!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
-        return showAllCitys(model);
+        return "redirect:/city/";
+    }
+
+    private boolean isCityValid(City city) {
+        return !city.getName().isEmpty();
     }
 }
 

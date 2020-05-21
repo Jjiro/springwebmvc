@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <title>Country list | SKOOL Study Information System</title>
+    <title>School list | SKOOL Study Information System</title>
 </head>
 <body>
     <div class="container-fluid">
@@ -44,15 +44,15 @@
         <br/>
         <div class="container">
             <div class="jumbotron">
-                <h4 class="display-4">Countries list <span class="float-right"><a href="/country/add" class="btn btn-success">Add Country</a> </span></h4>
+                <h4 class="display-4">Schools list <span class="float-right"><a href="/school/add" class="btn btn-success">Add school</a> </span></h4>
                 <div th:if="${messageType} == 'success'" class="alert alert-success" role="alert">
                     <span th:text="${message}"></span>
                 </div>
                 <div th:if="${messageType} == 'error'" class="alert alert-danger" role="alert">
                     <span th:text="${message}"></span>
                 </div>
-                <div class="container-fluid" th:switch="${countries.size() > 0}">
-                    <h3 th:case="false">No countries available!</h3>
+                <div class="container-fluid" th:switch="${schools.size() > 0}">
+                    <h3 th:case="false">No schools available!</h3>
                     <table th:case="true" class="table">
                         <thead>
                             <tr>
@@ -62,13 +62,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="country : ${countries}">
-                                <th scope="row" th:text="${country.id}"></th>
-                                <td th:text="${country.name}"></td>
+                            <tr th:each="school : ${schools}">
+                                <th scope="row" th:text="${school.id}"></th>
+                                <td th:text="${school.name}"></td>
                                 <td>
-                                    <a th:if="${country.active} == true" th:href="@{/country/update/{id}(id=${country.id})}" class="btn btn-primary">Update</a>
-                                    <a th:if="${country.active} == true" th:href="@{/country/delete/{id}(id=${country.id})}" class="btn btn-danger">Delete</a>
-                                    <a th:if="${country.active} == false" th:href="@{/country/restore/{id}(id=${country.id})}" class="btn btn-warning">Restore</a>
+                                    <a th:if="${school.active} == true" th:href="@{/school/update/{id}(id=${school.id})}" class="btn btn-primary">Update</a>
+                                    <a th:if="${school.active} == true" th:href="@{/school/delete/{id}(id=${school.id})}" class="btn btn-danger">Delete</a>
+                                    <a th:if="${school.active} == false" th:href="@{/school/restore/{id}(id=${school.id})}" class="btn btn-warning">Restore</a>
                                 </td>
                             </tr>
                         </tbody>

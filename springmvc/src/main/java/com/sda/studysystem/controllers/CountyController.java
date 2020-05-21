@@ -1,14 +1,13 @@
 package com.sda.studysystem.controllers;
 
+import com.sda.studysystem.models.Country;
 import com.sda.studysystem.models.County;
 import com.sda.studysystem.services.CountyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -20,84 +19,106 @@ public class CountyController {
     private CountyService countyService;
 
     @GetMapping("")
-    public String showAllCountys(Model model) {
+    public String showAllCounties(@ModelAttribute("messageType") String messageType, @ModelAttribute("message") String message,
+                                   Model model) {
         List<County> counties = countyService.getAllCounties();
         model.addAttribute("counties", counties);
-        return "show-all-counties";
+        return "county/county-list";
     }
 
     @GetMapping("/add")
-    public String addCountyForm(Model model) {
-        return "add-county";
+    public String addCountyForm(@ModelAttribute("county") County county, @ModelAttribute("messageType") String messageType,
+                                 @ModelAttribute("message") String message) {
+        return "county/county-add";
     }
 
     @PostMapping("/add")
-    public String addCounty(County county, Model model) {
-        county.setActive(true);
-        boolean createResult = countyService.createCounty(county);
+    public String addCounty(County county, RedirectAttributes redirectAttributes) {
+        boolean createResult = false;
+
+        if (isCountyValid(county)) {
+            county.setActive(true);
+            createResult = countyService.createCounty(county);
+        }
 
         if (createResult) {
-            model.addAttribute("message", "County has been successfully created.");
-            model.addAttribute("messageType", "success");
-            return showAllCountys(model);
+            redirectAttributes.addFlashAttribute("message", "County has been successfully created.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/county/";
         } else {
-            model.addAttribute("county", county);
-            model.addAttribute("message", "Error in creating a county!");
-            model.addAttribute("messageType", "error");
-            return addCountyForm(model);
+            redirectAttributes.addFlashAttribute("country", county);
+            redirectAttributes.addFlashAttribute("message", "Error in creating a county!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/county/add";
         }
     }
 
-    @GetMapping("/update")
-    public String updateCountyForm(Model model) {
-        return "update-county";
+    @GetMapping("/update/{id}")
+    public String updateCountyForm(@PathVariable("id") Long countyId, @RequestParam(value = "county", required = false) County county,
+                                    @ModelAttribute("messageType") String messageType,
+                                    @ModelAttribute("message") String message, Model model) {
+        if (county == null) {
+            model.addAttribute("county", countyService.getById(countyId));
+        }
+
+        return "county/county-update";
     }
 
+
     @PostMapping("/update/{id}")
-    public String updateCounty(@PathVariable("id") Long countyId, County county, Model model) {
-        county.setId(countyId);
-        boolean updateResult = countyService.updateCounty(county);
+    public String updateCounty(@PathVariable("id") Long countyId, County county, RedirectAttributes redirectAttributes) {
+        boolean updateResult = false;
+
+        if (isCountyValid(county)) {
+            county.setId(countyId);
+            updateResult = countyService.updateCounty(county);
+        }
 
         if (updateResult) {
-            model.addAttribute("message", "County has been successfully updated.");
-            model.addAttribute("messageType", "success");
-            return showAllCountys(model);
+            redirectAttributes.addFlashAttribute("message", "County has been successfully updated.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/county/";
         } else {
-            model.addAttribute("county", county);
-            model.addAttribute("message", "Error in updating a county!");
-            model.addAttribute("messageType", "error");
-            return updateCountyForm(model);
+            redirectAttributes.addAttribute("id", countyId);
+            redirectAttributes.addAttribute("county", county);
+            redirectAttributes.addFlashAttribute("message", "Error in updating a county!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/county/update/{id}";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteCounty(@PathVariable("id") Long countyId, Model model) {
+    public String deleteCounty(@PathVariable("id") Long countyId, RedirectAttributes redirectAttributes) {
         boolean deleteResult = countyService.deleteCountyById(countyId);
 
         if (deleteResult) {
-            model.addAttribute("message", "County has been successfully deleted.");
-            model.addAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "County has been successfully deleted.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            model.addAttribute("message", "Error in deleting a county!");
-            model.addAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Error in deleting a country!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
-        return showAllCountys(model);
+        return "redirect:/county/";
     }
 
     @GetMapping("/restore/{id}")
-    public String restoreCounty(@PathVariable("id") Long countyId, Model model) {
+    public String restoreCounty(@PathVariable("id") Long countyId, RedirectAttributes redirectAttributes) {
         boolean restoreResult = countyService.restoreCountyById(countyId);
 
         if (restoreResult) {
-            model.addAttribute("message", "County has been successfully restored.");
-            model.addAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "County has been successfully restored.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            model.addAttribute("message", "Error in restoring a county!");
-            model.addAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Error in restoring a country!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
-        return showAllCountys(model);
+        return "redirect:/county/";
+    }
+
+    private boolean isCountyValid(County county) {
+        return !county.getName().isEmpty();
     }
 }
 

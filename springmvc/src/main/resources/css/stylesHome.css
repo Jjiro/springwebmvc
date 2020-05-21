@@ -1,0 +1,10 @@
+
+.bg-primary{
+    background-color: lightseagreen !important;
+}
+body{
+    background-image: url("../img/happy-team.jpg");
+    background-repeat: no-repeat;
+}
+
+

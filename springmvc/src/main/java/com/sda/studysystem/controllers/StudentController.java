@@ -6,10 +6,8 @@ import com.sda.studysystem.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -20,88 +18,103 @@ import java.util.List;
 @Controller
 @RequestMapping("/student")
 public class StudentController {
+
     @Autowired
     private StudentService studentService;
 
-    @GetMapping("")
-    public String showAllStudents(Model model) {
-        List<Student> students = studentService.getAllStudents();
-        model.addAttribute("students", students);
-        return "show-all-students";
-    }
-
     @GetMapping("/add")
-    public String addStudentForm(Model model) {
-        return "add-student";
+    public String addStudentForm(@ModelAttribute("student") Student student, @ModelAttribute("messageType") String messageType,
+                                @ModelAttribute("message") String message) {
+        return "student/student-add";
     }
 
     @PostMapping("/add")
-    public String addStudent(Student student, Model model) {
-        student.setActive(true);
-        boolean createResult = studentService.createStudent(student);
+    public String addStudent(Student student, RedirectAttributes redirectAttributes) {
+        boolean createResult = false;
+
+        if (isStudentValid(student)) {
+            student.setActive(true);
+            createResult = studentService.createStudent(student);
+        }
 
         if (createResult) {
-            model.addAttribute("message", "Student has been successfully created.");
-            model.addAttribute("messageType", "success");
-            return showAllStudents(model);
+            redirectAttributes.addFlashAttribute("message", "Student has been successfully created.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/student/";
         } else {
-            model.addAttribute("student", student);
-            model.addAttribute("message", "Error in creating a student!");
-            model.addAttribute("messageType", "error");
-            return addStudentForm(model);
+            redirectAttributes.addFlashAttribute("student", student);
+            redirectAttributes.addFlashAttribute("message", "Error in creating a student!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/student/add";
         }
     }
 
-    @GetMapping("/update")
-    public String updateStudentForm(Model model) {
-        return "update-student";
+    @GetMapping("/update/{id}")
+    public String updateStudentForm(@PathVariable("id") Long studentId, @RequestParam(value = "student", required = false) Student student,
+                                 @ModelAttribute("messageType") String messageType,
+                                 @ModelAttribute("message") String message, Model model) {
+        if (student == null) {
+            model.addAttribute("student", studentService.getById(studentId));
+        }
+
+        return "school/school-update";
     }
 
     @PostMapping("/update/{id}")
-    public String updateStudent(@PathVariable("id") Long studentId, Student student, Model model) {
-        student.setId(studentId);
-        boolean updateResult = studentService.updateStudent(student);
+    public String updateStudent(@PathVariable("id") Long studentId, Student student, RedirectAttributes redirectAttributes) {
+        boolean updateResult = false;
+
+        if (isStudentValid(student)) {
+            student.setId(studentId);
+            updateResult = studentService.updateStudent(student);
+        }
 
         if (updateResult) {
-            model.addAttribute("message", "Student has been successfully updated.");
-            model.addAttribute("messageType", "success");
-            return showAllStudents(model);
+            redirectAttributes.addFlashAttribute("message", "Student has been successfully updated.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/student/";
         } else {
-            model.addAttribute("student", student);
-            model.addAttribute("message", "Error in updating a student!");
-            model.addAttribute("messageType", "error");
-            return updateStudentForm(model);
+            redirectAttributes.addAttribute("id", studentId);
+            redirectAttributes.addAttribute("student", student);
+            redirectAttributes.addFlashAttribute("message", "Error in updating a student!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/student/update/{id}";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteStudent(@PathVariable("id") Long studentId, Model model) {
+    public String deleteStudent(@PathVariable("id") Long studentId, RedirectAttributes redirectAttributes) {
         boolean deleteResult = studentService.deleteStudentById(studentId);
 
         if (deleteResult) {
-            model.addAttribute("message", "Student has been successfully deleted.");
-            model.addAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Student has been successfully deleted.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            model.addAttribute("message", "Error in deleting a student!");
-            model.addAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Error in deleting a student!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
-        return showAllStudents(model);
+        return "redirect:/student/";
     }
 
     @GetMapping("/restore/{id}")
-    public String restoreStudent(@PathVariable("id") Long studentId, Model model) {
+    public String restoreStudent(@PathVariable("id") Long studentId, RedirectAttributes redirectAttributes) {
         boolean restoreResult = studentService.restoreStudentById(studentId);
 
         if (restoreResult) {
-            model.addAttribute("message", "Student has been successfully restored.");
-            model.addAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "School has been successfully restored.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            model.addAttribute("message", "Error in restoring a student!");
-            model.addAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Error in restoring a school!");
+            redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
-        return showAllStudents(model);
+        return "redirect:/student/";
     }
+
+    private boolean isStudentValid(Student student) {
+        return !student.getName().isEmpty();
+    }
+
 }
 
