@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <title>Add School | SKOOL Study Information System</title>
+    <title>Add Student | SKOOL Study Information System</title>
 </head>
 <body>
     <div class="container-fluid">
@@ -44,17 +44,17 @@
         <br/>
         <div class="container">
             <div class="jumbotron">
-                <h4 class="display-4">Add School</h4>
+                <h4 class="display-4">Add Student</h4>
                 <div th:if="${messageType} == 'error'" class="alert alert-danger" role="alert">
                     <span th:text="${message}"></span>
                 </div>
-                    <form action="#" th:action="@{/school/add}" th:object="${school}" method="post">
+                    <form action="#" th:action="@{/student/add}" th:object="${student}" method="post">
                         <div class="form-group">
-                            <label for="name">School name</label>
+                            <label for="name">Student name</label>
                             <input type="text" th:field="*{name}" class="form-control" id="name" aria-describedby="nameHelp" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Add</button>
-                        <a href="/school/" class="btn btn-success">Cancel</a>
+                        <a href="/student" class="btn btn-success">Cancel</a>
                     </form>
             </div>
         </div>

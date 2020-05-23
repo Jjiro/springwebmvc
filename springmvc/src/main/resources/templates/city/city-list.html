@@ -44,7 +44,7 @@
         <br/>
         <div class="container">
             <div class="jumbotron">
-                <h4 class="display-4">Cities list <span class="float-right"><a href="/city/add" class="btn btn-success">Add city</a> </span></h4>
+                <h4 class="display-4">Cities list <span class="float-right"><a href="/city/add" class="btn btn-success">Add City</a> </span></h4>
                 <div th:if="${messageType} == 'success'" class="alert alert-success" role="alert">
                     <span th:text="${message}"></span>
                 </div>
@@ -52,12 +52,14 @@
                     <span th:text="${message}"></span>
                 </div>
                 <div class="container-fluid" th:switch="${cities.size() > 0}">
-                    <h3 th:case="false">No cities available!</h3>
+                    <h3 th:case="false">No Cities available!</h3>
                     <table th:case="true" class="table">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">County</th>
+                                <th scope="col">Country</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -65,6 +67,8 @@
                             <tr th:each="city : ${cities}">
                                 <th scope="row" th:text="${city.id}"></th>
                                 <td th:text="${city.name}"></td>
+                                <td th:text="${city.county.name}"></td>
+                                <td th:text="${city.country.name}"></td>
                                 <td>
                                     <a th:if="${city.active} == true" th:href="@{/city/update/{id}(id=${city.id})}" class="btn btn-primary">Update</a>
                                     <a th:if="${city.active} == true" th:href="@{/city/delete/{id}(id=${city.id})}" class="btn btn-danger">Delete</a>

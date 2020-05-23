@@ -50,6 +50,12 @@
                 </div>
                     <form action="#" th:action="@{/county/add}" th:object="${county}" method="post">
                         <div class="form-group">
+                            <label for="country">Select Country</label>
+                            <select th:field="*{country.id}" class="custom-select" id="country" required>
+                                <option th:each="country : ${countries}" th:value="${country.id}" th:text="${country.name}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="name">County name</label>
                             <input type="text" th:field="*{name}" class="form-control" id="name" aria-describedby="nameHelp" required>
                         </div>

@@ -44,11 +44,29 @@
         <br/>
         <div class="container">
             <div class="jumbotron">
-                <h4 class="display-4">Add School</h4>
+                <h4 class="display-4">Update School</h4>
                 <div th:if="${messageType} == 'error'" class="alert alert-danger" role="alert">
                     <span th:text="${message}"></span>
                 </div>
                 <form action="#" th:action="@{/school/update/{id}(id=${school.id})}" th:object="${school}" method="post">
+                    <div class="form-group">
+                        <label for="country">Select Country</label>
+                        <select th:field="*{country.id}" class="custom-select" id="country" required>
+                            <option th:each="country : ${countries}" th:value="${country.id}" th:text="${country.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="county">Select County</label>
+                        <select th:field="*{county.id}" class="custom-select" id="county" required>
+                            <option th:each="county : ${counties}" th:value="${county.id}" th:text="${county.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Select City</label>
+                        <select th:field="*{city.id}" class="custom-select" id="city" required>
+                            <option th:each="city : ${cities}" th:value="${city.id}" th:text="${city.name}"></option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="name">School name</label>
                         <input type="text" th:field="*{name}" class="form-control" id="name" aria-describedby="nameHelp" required>

@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -32,13 +33,8 @@ public class CountryController {
     }
 
     @PostMapping("/add")
-    public String addCountry(Country country, RedirectAttributes redirectAttributes) {
-        boolean createResult = false;
-
-        if (isCountryValid(country)) {
-            country.setActive(true);
-            createResult = countryService.createCountry(country);
-        }
+    public String addCountry(@Valid Country country, RedirectAttributes redirectAttributes) {
+        boolean createResult = countryService.createCountry(country);
 
         if (createResult) {
             redirectAttributes.addFlashAttribute("message", "Country has been successfully created.");
@@ -64,22 +60,18 @@ public class CountryController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateCountry(@PathVariable("id") Long countryId, Country country, RedirectAttributes redirectAttributes) {
-        boolean updateResult = false;
-
-        if (isCountryValid(country)) {
-            country.setId(countryId);
-            updateResult = countryService.updateCountry(country);
-        }
+    public String updateCountry(@PathVariable("id") Long countryId, @Valid Country country, RedirectAttributes redirectAttributes) {
+        country.setId(countryId);
+        boolean updateResult = countryService.updateCountry(country);
 
         if (updateResult) {
-            redirectAttributes.addFlashAttribute("message", "Country has been successfully updated.");
+            redirectAttributes.addFlashAttribute("message", "Country #" + countryId + " has been successfully updated.");
             redirectAttributes.addFlashAttribute("messageType", "success");
             return "redirect:/country/";
         } else {
             redirectAttributes.addAttribute("id", countryId);
             redirectAttributes.addAttribute("country", country);
-            redirectAttributes.addFlashAttribute("message", "Error in updating a country!");
+            redirectAttributes.addFlashAttribute("message", "Error in updating this country #" + countryId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
             return "redirect:/country/update/{id}";
         }
@@ -90,10 +82,10 @@ public class CountryController {
         boolean deleteResult = countryService.deleteCountryById(countryId);
 
         if (deleteResult) {
-            redirectAttributes.addFlashAttribute("message", "Country has been successfully deleted.");
+            redirectAttributes.addFlashAttribute("message", "Country #" + countryId + " has been successfully deleted.");
             redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            redirectAttributes.addFlashAttribute("message", "Error in deleting a country!");
+            redirectAttributes.addFlashAttribute("message", "Error in deleting country #" + countryId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
@@ -105,18 +97,14 @@ public class CountryController {
         boolean restoreResult = countryService.restoreCountryById(countryId);
 
         if (restoreResult) {
-            redirectAttributes.addFlashAttribute("message", "Country has been successfully restored.");
+            redirectAttributes.addFlashAttribute("message", "Country #" + countryId + " has been successfully restored.");
             redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            redirectAttributes.addFlashAttribute("message", "Error in restoring a country!");
+            redirectAttributes.addFlashAttribute("message", "Error in restoring country #" + countryId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
         return "redirect:/country/";
-    }
-
-    private boolean isCountryValid(Country country) {
-        return !country.getName().isEmpty();
     }
 }
 

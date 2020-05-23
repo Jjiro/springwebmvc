@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -22,20 +23,24 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+
+    @GetMapping("")
+    public String showAllStudents(@ModelAttribute("messageType") String messageType, @ModelAttribute("message") String message,
+                                   Model model) {
+        List<Student> students = studentService.getAllStudents();
+        model.addAttribute("students", students);
+        return "student/student-list";
+    }
+
     @GetMapping("/add")
     public String addStudentForm(@ModelAttribute("student") Student student, @ModelAttribute("messageType") String messageType,
-                                @ModelAttribute("message") String message) {
+                                 @ModelAttribute("message") String message) {
         return "student/student-add";
     }
 
     @PostMapping("/add")
-    public String addStudent(Student student, RedirectAttributes redirectAttributes) {
-        boolean createResult = false;
-
-        if (isStudentValid(student)) {
-            student.setActive(true);
-            createResult = studentService.createStudent(student);
-        }
+    public String addStudent(@Valid Student student, RedirectAttributes redirectAttributes) {
+        boolean createResult = studentService.createStudent(student);
 
         if (createResult) {
             redirectAttributes.addFlashAttribute("message", "Student has been successfully created.");
@@ -51,32 +56,28 @@ public class StudentController {
 
     @GetMapping("/update/{id}")
     public String updateStudentForm(@PathVariable("id") Long studentId, @RequestParam(value = "student", required = false) Student student,
-                                 @ModelAttribute("messageType") String messageType,
-                                 @ModelAttribute("message") String message, Model model) {
+                                    @ModelAttribute("messageType") String messageType,
+                                    @ModelAttribute("message") String message, Model model) {
         if (student == null) {
             model.addAttribute("student", studentService.getById(studentId));
         }
 
-        return "school/school-update";
+        return "student/student-update";
     }
 
     @PostMapping("/update/{id}")
-    public String updateStudent(@PathVariable("id") Long studentId, Student student, RedirectAttributes redirectAttributes) {
-        boolean updateResult = false;
-
-        if (isStudentValid(student)) {
-            student.setId(studentId);
-            updateResult = studentService.updateStudent(student);
-        }
+    public String updateStudent(@PathVariable("id") Long studentId, @Valid Student student, RedirectAttributes redirectAttributes) {
+        student.setId(studentId);
+        boolean updateResult = studentService.updateStudent(student);
 
         if (updateResult) {
-            redirectAttributes.addFlashAttribute("message", "Student has been successfully updated.");
+            redirectAttributes.addFlashAttribute("message", "Student #" + studentId + " has been successfully updated.");
             redirectAttributes.addFlashAttribute("messageType", "success");
             return "redirect:/student/";
         } else {
             redirectAttributes.addAttribute("id", studentId);
             redirectAttributes.addAttribute("student", student);
-            redirectAttributes.addFlashAttribute("message", "Error in updating a student!");
+            redirectAttributes.addFlashAttribute("message", "Error in updating this student #" + studentId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
             return "redirect:/student/update/{id}";
         }
@@ -87,10 +88,10 @@ public class StudentController {
         boolean deleteResult = studentService.deleteStudentById(studentId);
 
         if (deleteResult) {
-            redirectAttributes.addFlashAttribute("message", "Student has been successfully deleted.");
+            redirectAttributes.addFlashAttribute("message", "Student #" + studentId + " has been successfully deleted.");
             redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            redirectAttributes.addFlashAttribute("message", "Error in deleting a student!");
+            redirectAttributes.addFlashAttribute("message", "Error in deleting student #" + studentId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
@@ -102,18 +103,14 @@ public class StudentController {
         boolean restoreResult = studentService.restoreStudentById(studentId);
 
         if (restoreResult) {
-            redirectAttributes.addFlashAttribute("message", "School has been successfully restored.");
+            redirectAttributes.addFlashAttribute("message", "Student #" + studentId + " has been successfully restored.");
             redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            redirectAttributes.addFlashAttribute("message", "Error in restoring a school!");
+            redirectAttributes.addFlashAttribute("message", "Error in restoring student #" + studentId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
         return "redirect:/student/";
-    }
-
-    private boolean isStudentValid(Student student) {
-        return !student.getName().isEmpty();
     }
 
 }

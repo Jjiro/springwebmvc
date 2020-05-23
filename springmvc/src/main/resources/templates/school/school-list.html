@@ -52,25 +52,30 @@
                     <span th:text="${message}"></span>
                 </div>
                 <div class="container-fluid" th:switch="${schools.size() > 0}">
-                    <h3 th:case="false">No schools available!</h3>
+                    <h3 th:case="false">No Schools available!</h3>
                     <table th:case="true" class="table">
                         <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Action</th>
-                            </tr>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <!--<th scope="col">County</th>
+                            <th scope="col">Country</th>-->
+                            <th scope="col">Action</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="school : ${schools}">
-                                <th scope="row" th:text="${school.id}"></th>
-                                <td th:text="${school.name}"></td>
-                                <td>
-                                    <a th:if="${school.active} == true" th:href="@{/school/update/{id}(id=${school.id})}" class="btn btn-primary">Update</a>
-                                    <a th:if="${school.active} == true" th:href="@{/school/delete/{id}(id=${school.id})}" class="btn btn-danger">Delete</a>
-                                    <a th:if="${school.active} == false" th:href="@{/school/restore/{id}(id=${school.id})}" class="btn btn-warning">Restore</a>
-                                </td>
-                            </tr>
+                        <tr th:each="school : ${schools}">
+                            <th scope="row" th:text="${school.id}"></th>
+                            <td th:text="${school.name}"></td>
+                            <!--<td th:text="${city.name}"></td>
+                            <td th:text="${city.county.name}"></td>
+                            <td th:text="${city.country.name}"></td>-->
+                            <td>
+                                <a th:if="${school.active} == true" th:href="@{/school/update/{id}(id=${school.id})}" class="btn btn-primary">Update</a>
+                                <a th:if="${school.active} == true" th:href="@{/school/delete/{id}(id=${school.id})}" class="btn btn-danger">Delete</a>
+                                <a th:if="${school.active} == false" th:href="@{/school/restore/{id}(id=${school.id})}" class="btn btn-warning">Restore</a>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>

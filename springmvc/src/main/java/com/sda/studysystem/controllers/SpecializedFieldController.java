@@ -1,7 +1,9 @@
 package com.sda.studysystem.controllers;
 
 
+import com.sda.studysystem.models.Category;
 import com.sda.studysystem.models.SpecializedField;
+import com.sda.studysystem.services.CategoryService;
 import com.sda.studysystem.services.SpecializedFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,7 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/specialized-field")
@@ -18,9 +22,12 @@ public class SpecializedFieldController {
     @Autowired
     private SpecializedFieldService specializedFieldService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @GetMapping("")
-    public String showAllSpecializedField(@ModelAttribute("messageType") String messageType, @ModelAttribute("message") String message,
-                                Model model) {
+    public String showAllSpecializedFields(@ModelAttribute("messageType") String messageType, @ModelAttribute("message") String message,
+                                  Model model) {
         List<SpecializedField> specializedFields = specializedFieldService.getAllSpecializedFields();
         model.addAttribute("specializedFields", specializedFields);
         return "specializedField/specialized-field-list";
@@ -28,61 +35,58 @@ public class SpecializedFieldController {
 
     @GetMapping("/add")
     public String addSpecializedFieldForm(@ModelAttribute("specializedField") SpecializedField specializedField, @ModelAttribute("messageType") String messageType,
-                                @ModelAttribute("message") String message) {
+                                @ModelAttribute("message") String message, Model model) {
+        List<Category> categories = categoryService.getAllCategories().stream()
+                .filter(Category::isActive).collect(Collectors.toList());
+        model.addAttribute("categories", categories);
         return "specializedField/specialized-field-add";
     }
 
     @PostMapping("/add")
-    public String addSpecializedField(SpecializedField specializedField, RedirectAttributes redirectAttributes) {
-        boolean createResult = false;
-
-        if (isSpecializedFieldValid(specializedField)) {
-            specializedField.setActive(true);
-            createResult = specializedFieldService.createSpecializedField(specializedField);
-        }
+    public String addSpecializedField(@Valid SpecializedField specializedField, RedirectAttributes redirectAttributes) {
+        boolean createResult = specializedFieldService.createSpecializedField(specializedField);
 
         if (createResult) {
-            redirectAttributes.addFlashAttribute("message", "Specialized Field has been successfully created.");
+            redirectAttributes.addFlashAttribute("message", "SpecializedField has been successfully created.");
             redirectAttributes.addFlashAttribute("messageType", "success");
-            return "redirect:/specialized-field/";
+            return "redirect:/specializedField/";
         } else {
             redirectAttributes.addFlashAttribute("specializedField", specializedField);
-            redirectAttributes.addFlashAttribute("message", "Error in creating a specialized field!");
+            redirectAttributes.addFlashAttribute("message", "Error in creating a SpecializedField!");
             redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/specialized-field/add";
+            return "redirect:/specializedField/add";
         }
     }
 
     @GetMapping("/update/{id}")
     public String updateSpecializedFieldForm(@PathVariable("id") Long specializedFieldId, @RequestParam(value = "specializedField", required = false) SpecializedField specializedField,
-                                 @ModelAttribute("messageType") String messageType,
-                                 @ModelAttribute("message") String message, Model model) {
+                                   @ModelAttribute("messageType") String messageType,
+                                   @ModelAttribute("message") String message, Model model) {
         if (specializedField == null) {
             model.addAttribute("specializedField", specializedFieldService.getById(specializedFieldId));
         }
 
+        List<Category> categories = categoryService.getAllCategories().stream()
+                .filter(Category::isActive).collect(Collectors.toList());
+        model.addAttribute("categories", categories);
         return "specializedField/specialized-field-update";
     }
 
     @PostMapping("/update/{id}")
-    public String updateSpecializedField(@PathVariable("id") Long specializedFieldId, SpecializedField specializedField, RedirectAttributes redirectAttributes) {
-        boolean updateResult = false;
-
-        if (isSpecializedFieldValid(specializedField)) {
-            specializedField.setId(specializedFieldId);
-            updateResult = specializedFieldService.updateSpecializedField(specializedField);
-        }
+    public String updateSpecializedField(@PathVariable("id") Long specializedFieldId, @Valid SpecializedField specializedField, RedirectAttributes redirectAttributes) {
+        specializedField.setId(specializedFieldId);
+        boolean updateResult = specializedFieldService.updateSpecializedField(specializedField);
 
         if (updateResult) {
-            redirectAttributes.addFlashAttribute("message", "Specialized Field has been successfully updated.");
+            redirectAttributes.addFlashAttribute("message", "SpecializedField #" + specializedFieldId + "has been successfully updated.");
             redirectAttributes.addFlashAttribute("messageType", "success");
             return "redirect:/specialized-field/";
         } else {
             redirectAttributes.addAttribute("id", specializedFieldId);
             redirectAttributes.addAttribute("specializedField", specializedField);
-            redirectAttributes.addFlashAttribute("message", "Error in updating a specialized field!");
+            redirectAttributes.addFlashAttribute("message", "Error in updating a specializedField #" + specializedFieldId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/specialized-field/update/{id}";
+            return "redirect:/specializedField/update/{id}";
         }
     }
 
@@ -91,10 +95,10 @@ public class SpecializedFieldController {
         boolean deleteResult = specializedFieldService.deleteSpecializedFieldById(specializedFieldId);
 
         if (deleteResult) {
-            redirectAttributes.addFlashAttribute("message", "Specialized Field has been successfully deleted.");
+            redirectAttributes.addFlashAttribute("message", "SpecializedField #" + specializedFieldId + "has been successfully deleted.");
             redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            redirectAttributes.addFlashAttribute("message", "Error in deleting a school!");
+            redirectAttributes.addFlashAttribute("message", "Error in deleting a specializedField #" + specializedFieldId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
@@ -106,19 +110,16 @@ public class SpecializedFieldController {
         boolean restoreResult = specializedFieldService.restoreSpecializedFieldById(specializedFieldId);
 
         if (restoreResult) {
-            redirectAttributes.addFlashAttribute("message", "SpecializedField has been successfully restored.");
+            redirectAttributes.addFlashAttribute("message", "SpecializedField #" + specializedFieldId + " has been successfully restored.");
             redirectAttributes.addFlashAttribute("messageType", "success");
         } else {
-            redirectAttributes.addFlashAttribute("message", "Error in restoring a specializedField!");
+            redirectAttributes.addFlashAttribute("message", "Error in restoring a specializedField #" + specializedFieldId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
 
         return "redirect:/specialized-field/";
     }
 
-    private boolean isSpecializedFieldValid(SpecializedField specializedField) {
-        return !specializedField.getName().isEmpty();
-    }
 }
 
 

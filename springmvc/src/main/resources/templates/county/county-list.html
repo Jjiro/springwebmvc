@@ -44,7 +44,7 @@
         <br/>
         <div class="container">
             <div class="jumbotron">
-                <h4 class="display-4">Counties list <span class="float-right"><a href="/county/add" class="btn btn-success">Add County</a> </span></h4>
+                <h4 class="display-4">Counties list <span class="float-right"><a href="/county/add" class="btn btn-success">Add county</a> </span></h4>
                 <div th:if="${messageType} == 'success'" class="alert alert-success" role="alert">
                     <span th:text="${message}"></span>
                 </div>
@@ -52,12 +52,13 @@
                     <span th:text="${message}"></span>
                 </div>
                 <div class="container-fluid" th:switch="${counties.size() > 0}">
-                    <h3 th:case="false">No counties available!</h3>
+                    <h3 th:case="false">No Counties available!</h3>
                     <table th:case="true" class="table">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">Country</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -65,10 +66,11 @@
                             <tr th:each="county : ${counties}">
                                 <th scope="row" th:text="${county.id}"></th>
                                 <td th:text="${county.name}"></td>
+                                <td th:text="${county.country.name}"></td>
                                 <td>
                                     <a th:if="${county.active} == true" th:href="@{/county/update/{id}(id=${county.id})}" class="btn btn-primary">Update</a>
                                     <a th:if="${county.active} == true" th:href="@{/county/delete/{id}(id=${county.id})}" class="btn btn-danger">Delete</a>
-                                    <a th:if="${county.active} == false" th:href="@{/counry/restore/{id}(id=${county.id})}" class="btn btn-warning">Restore</a>
+                                    <a th:if="${county.active} == false" th:href="@{/county/restore/{id}(id=${county.id})}" class="btn btn-warning">Restore</a>
                                 </td>
                             </tr>
                         </tbody>

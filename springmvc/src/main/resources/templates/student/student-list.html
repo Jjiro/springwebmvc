@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <title>Category list | SKOOL Study Information System</title>
+    <title>Student list | SKOOL Study Information System</title>
 </head>
 <body>
     <div class="container-fluid">
@@ -44,15 +44,15 @@
         <br/>
         <div class="container">
             <div class="jumbotron">
-                <h4 class="display-4">Categories list <span class="float-right"><a href="/category/add" class="btn btn-success">Add Category</a> </span></h4>
+                <h4 class="display-4">Students list <span class="float-right"><a href="/student/add" class="btn btn-success">Add Student</a> </span></h4>
                 <div th:if="${messageType} == 'success'" class="alert alert-success" role="alert">
                     <span th:text="${message}"></span>
                 </div>
                 <div th:if="${messageType} == 'error'" class="alert alert-danger" role="alert">
                     <span th:text="${message}"></span>
                 </div>
-                <div class="container-fluid" th:switch="${categories.size() > 0}">
-                    <h3 th:case="false">No Categories available!</h3>
+                <div class="container-fluid" th:switch="${students.size() > 0}">
+                    <h3 th:case="false">No Students available!</h3>
                     <table th:case="true" class="table">
                         <thead>
                             <tr>
@@ -62,13 +62,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="category : ${categories}">
-                                <th scope="row" th:text="${category.id}"></th>
-                                <td th:text="${category.name}"></td>
+                            <tr th:each="student : ${students}">
+                                <th scope="row" th:text="${student.id}"></th>
+                                <td th:text="${student.name}"></td>
                                 <td>
-                                    <a th:if="${category.active} == true" th:href="@{/category/update/{id}(id=${category.id})}" class="btn btn-primary">Update</a>
-                                    <a th:if="${category.active} == true" th:href="@{/category/delete/{id}(id=${category.id})}" class="btn btn-danger">Delete</a>
-                                    <a th:if="${category.active} == false" th:href="@{/category/restore/{id}(id=${category.id})}" class="btn btn-warning">Restore</a>
+                                    <a th:if="${student.active} == true" th:href="@{/student/update/{id}(id=${student.id})}" class="btn btn-primary">Update</a>
+                                    <a th:if="${student.active} == true" th:href="@{/student/delete/{id}(id=${student.id})}" class="btn btn-danger">Delete</a>
+                                    <a th:if="${student.active} == false" th:href="@{/student/restore/{id}(id=${student.id})}" class="btn btn-warning">Restore</a>
                                 </td>
                             </tr>
                         </tbody>
