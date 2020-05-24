@@ -51,7 +51,7 @@
                 <form action="#" th:action="@{/teacher/update/{id}(id=${teacher.id})}" th:object="${teacher}" method="post">
                     <div class="form-group">
                         <label for="specializedField">Select Specialized Field</label>
-                        <select th:field="*{specializedFields}" class="custom-select" id="specializedField" required>
+                        <select th:field="*{specializedFields.id}" class="custom-select" id="specializedField" required>
                             <option th:each="specializedField : ${specializedFields}" th:value="${specializedField.id}" th:text="${specializedField.name}"></option>
                         </select>
                     </div>

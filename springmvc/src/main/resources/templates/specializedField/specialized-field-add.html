@@ -48,7 +48,7 @@
             <div th:if="${messageType} == 'error'" class="alert alert-danger" role="alert">
                 <span th:text="${message}"></span>
             </div>
-            <form action="#" th:action="@{/specializedField/add}" th:object="${specializedField}" method="post">
+            <form action="#" th:action="@{/specialized-field/add}" th:object="${specializedField}" method="post">
                 <div class="form-group">
                     <label for="category">Select Category</label>
                     <select th:field="*{category.id}" class="custom-select" id="category" required>

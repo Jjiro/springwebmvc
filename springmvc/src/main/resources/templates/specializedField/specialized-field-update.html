@@ -44,13 +44,13 @@
         <br/>
         <div class="container">
             <div class="jumbotron">
-                <h4 class="display-4">Update Student</h4>
+                <h4 class="display-4">Update Specialized Field</h4>
                 <div th:if="${messageType} == 'error'" class="alert alert-danger" role="alert">
                     <span th:text="${message}"></span>
                 </div>
-                <form action="#" th:action="@{/specializedField/update/{id}(id=${specializedField.id})}" th:object="${specializedField}" method="post">
+                <form action="#" th:action="@{/specialized-field/update/{id}(id=${specializedField.id})}" th:object="${specializedField}" method="post">
                     <div class="form-group">
-                        <label for="name">Student name</label>
+                        <label for="name">Specialized Field name</label>
                         <input type="text" th:field="*{name}" class="form-control" id="name" aria-describedby="nameHelp" required>
                     </div>
                     <input type="hidden" th:field="*{active}" class="form-control" id="active">

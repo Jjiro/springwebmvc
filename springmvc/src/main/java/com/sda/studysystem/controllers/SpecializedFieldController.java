@@ -34,7 +34,8 @@ public class SpecializedFieldController {
     }
 
     @GetMapping("/add")
-    public String addSpecializedFieldForm(@ModelAttribute("specializedField") SpecializedField specializedField, @ModelAttribute("messageType") String messageType,
+    public String addSpecializedFieldForm(@ModelAttribute("specializedField") SpecializedField specializedField,
+                                          @ModelAttribute("messageType") String messageType,
                                 @ModelAttribute("message") String message, Model model) {
         List<Category> categories = categoryService.getAllCategories().stream()
                 .filter(Category::isActive).collect(Collectors.toList());
@@ -49,17 +50,18 @@ public class SpecializedFieldController {
         if (createResult) {
             redirectAttributes.addFlashAttribute("message", "SpecializedField has been successfully created.");
             redirectAttributes.addFlashAttribute("messageType", "success");
-            return "redirect:/specializedField/";
+            return "redirect:/specialized-field/";
         } else {
             redirectAttributes.addFlashAttribute("specializedField", specializedField);
             redirectAttributes.addFlashAttribute("message", "Error in creating a SpecializedField!");
             redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/specializedField/add";
+            return "redirect:/specialized-field/add";
         }
     }
 
     @GetMapping("/update/{id}")
-    public String updateSpecializedFieldForm(@PathVariable("id") Long specializedFieldId, @RequestParam(value = "specializedField", required = false) SpecializedField specializedField,
+    public String updateSpecializedFieldForm(@PathVariable("id") Long specializedFieldId,
+                                             @RequestParam(value = "specializedField", required = false) SpecializedField specializedField,
                                    @ModelAttribute("messageType") String messageType,
                                    @ModelAttribute("message") String message, Model model) {
         if (specializedField == null) {
@@ -73,7 +75,8 @@ public class SpecializedFieldController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateSpecializedField(@PathVariable("id") Long specializedFieldId, @Valid SpecializedField specializedField, RedirectAttributes redirectAttributes) {
+    public String updateSpecializedField(@PathVariable("id") Long specializedFieldId,
+                                         @Valid SpecializedField specializedField, RedirectAttributes redirectAttributes) {
         specializedField.setId(specializedFieldId);
         boolean updateResult = specializedFieldService.updateSpecializedField(specializedField);
 
@@ -86,7 +89,7 @@ public class SpecializedFieldController {
             redirectAttributes.addAttribute("specializedField", specializedField);
             redirectAttributes.addFlashAttribute("message", "Error in updating a specializedField #" + specializedFieldId + "!");
             redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/specializedField/update/{id}";
+            return "redirect:/specialized-field/update/{id}";
         }
     }
 
