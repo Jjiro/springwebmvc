@@ -6,6 +6,8 @@ import java.util.List;
 
 /**
  * Service to handle City related operations
+ *
+ * @author VinodJohn
  */
 
 public interface CityService {

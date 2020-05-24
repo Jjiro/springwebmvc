@@ -65,7 +65,7 @@
                         <tbody>
                         <tr th:each="specializedField : ${specializedFields}">
                             <th scope="row" th:text="${specializedField.id}"></th>
-                            <td th:text="${specializedField.id}"></td>
+                            <td th:text="${specializedField.name}"></td>
                             <td th:text="${specializedField.category.name}"></td>
                             <td>
                                 <a th:if="${specializedField.active} == true" th:href="@{/specialized-field/update/{id}(id=${specializedField.id})}" class="btn btn-primary">Update</a>

@@ -9,19 +9,31 @@ import java.util.List;
 
 /**
  * Implementation of SchoolService
+ *
+ * @author VinodJohn
  */
 
 @Service
 public class SchoolServiceImpl implements SchoolService {
-
     @Autowired
     private SchoolRepository schoolRepository;
+
+    @Autowired
+    private CountyService countyService;
+
+    @Autowired
+    private CountryService countryService;
+
+    @Autowired
+    private CityService cityService;
 
     @Override
     public boolean createSchool(School school) {
         if (school == null) {
             return false;
         }
+
+        school.setActive(true);
         schoolRepository.save(school);
         return true;
     }
@@ -49,7 +61,7 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     public boolean deleteSchoolById(Long schoolId) {
         School school = getById(schoolId);
-        if (schoolId == null) {
+        if (school == null) {
             return false;
         }
 
@@ -61,7 +73,10 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     public boolean restoreSchoolById(Long schoolId) {
         School school = getById(schoolId);
-        if (schoolId == null) {
+
+        if (school == null || !countyService.getById(school.getCounty().getId()).isActive() ||
+                !countryService.getById(school.getCountry().getId()).isActive() ||
+                !cityService.getById(school.getCity().getId()).isActive()) {
             return false;
         }
 

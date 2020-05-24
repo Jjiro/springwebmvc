@@ -9,19 +9,25 @@ import java.util.List;
 
 /**
  * Implementation of CategoryService
+ *
+ * @author VinodJohn
  */
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private SpecializedFieldService specializedFieldService;
 
     @Override
     public boolean createCategory(Category category) {
         if (category == null) {
             return false;
         }
+
+        category.setActive(true);
         categoryRepository.save(category);
         return true;
     }
@@ -49,23 +55,34 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean deleteCategoryById(Long categoryId) {
         Category category = getById(categoryId);
-        if (categoryId == null) {
+        if (category == null) {
             return false;
         }
 
         category.setActive(false);
         updateCategory(category);
+
+        specializedFieldService.getAllSpecializedFields().stream()
+                .filter(specializedField -> specializedField.getCategory().getId().equals(categoryId))
+                .forEach(specializedField -> specializedFieldService.deleteSpecializedFieldById(specializedField.getId()));
+
         return true;
     }
 
     @Override
     public boolean restoreCategoryById(Long categoryId) {
         Category category = getById(categoryId);
-        if (categoryId == null) {
+        if (category == null) {
             return false;
         }
 
         category.setActive(true);
-        return updateCategory(category);
+        updateCategory(category);
+
+        specializedFieldService.getAllSpecializedFields().stream()
+                .filter(specializedField -> specializedField.getCategory().getId().equals(categoryId))
+                .forEach(specializedField -> specializedFieldService.restoreSpecializedFieldById(specializedField.getId()));
+
+        return true;
     }
 }

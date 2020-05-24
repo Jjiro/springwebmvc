@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Implementation of CityService
+ *
+ * @author VinodJohn
  */
 
 @Service
@@ -16,11 +18,23 @@ public class CityServiceImpl implements CityService {
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private CountyService countyService;
+
+    @Autowired
+    private CountryService countryService;
+
+    @Autowired
+    private SchoolService schoolService;
+
+
     @Override
     public boolean createCity(City city) {
         if (city == null) {
             return false;
         }
+
+        city.setActive(true);
         cityRepository.save(city);
         return true;
     }
@@ -54,17 +68,29 @@ public class CityServiceImpl implements CityService {
 
         city.setActive(false);
         updateCity(city);
+
+        schoolService.getAllSchools().stream()
+                .filter(school -> school.getCity().getId().equals(cityId))
+                .forEach(school -> schoolService.deleteSchoolById(school.getId()));
+
         return true;
     }
 
     @Override
     public boolean restoreCityById(Long cityId) {
         City city = getById(cityId);
-        if (cityId == null) {
+        if (city == null || !countyService.getById(city.getCounty().getId()).isActive() ||
+                !countryService.getById(city.getCountry().getId()).isActive()) {
             return false;
         }
 
         city.setActive(true);
-        return updateCity(city);
+        updateCity(city);
+
+        schoolService.getAllSchools().stream()
+                .filter(school -> school.getCity().getId().equals(cityId))
+                .forEach(school -> schoolService.restoreSchoolById(school.getId()));
+
+        return true;
     }
 }

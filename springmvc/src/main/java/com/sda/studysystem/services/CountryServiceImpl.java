@@ -9,19 +9,24 @@ import java.util.List;
 
 /**
  * Implementation of CountryService
+ *
+ * @author VinodJohn
  */
 
 @Service
 public class CountryServiceImpl implements CountryService {
-
     @Autowired
     private CountryRepository countryRepository;
+
+    @Autowired
+    private CountyService countyService;
 
     @Override
     public boolean createCountry(Country country) {
         if (country == null) {
             return false;
         }
+        country.setActive(true);
         countryRepository.save(country);
         return true;
     }
@@ -49,24 +54,35 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public boolean deleteCountryById(Long countryId) {
         Country country = getById(countryId);
-        if (countryId == null) {
+        if (country == null) {
             return false;
         }
 
         country.setActive(false);
         updateCountry(country);
+
+        countyService.getAllCounties().stream()
+                .filter(county -> county.getCountry().getId().equals(countryId))
+                .forEach(county -> countyService.deleteCountyById(county.getId()));
+
         return true;
     }
 
     @Override
     public boolean restoreCountryById(Long countryId) {
         Country country = getById(countryId);
-        if (countryId == null) {
+        if (country == null) {
             return false;
         }
 
         country.setActive(true);
-        return updateCountry(country);
+        updateCountry(country);
+
+        countyService.getAllCounties().stream()
+                .filter(county -> county.getCountry().getId().equals(countryId))
+                .forEach(county -> countyService.restoreCountyById(county.getId()));
+
+        return true;
     }
 }
 

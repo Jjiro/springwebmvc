@@ -9,11 +9,12 @@ import java.util.List;
 
 /**
  * Implementation of StudentService
+ *
+ * @author VinodJohn
  */
 
 @Service
 public class StudentServiceImpl implements StudentService {
-
     @Autowired
     private StudentRepository studentRepository;
 
@@ -22,6 +23,8 @@ public class StudentServiceImpl implements StudentService {
         if (student == null) {
             return false;
         }
+
+        student.setActive(true);
         studentRepository.save(student);
         return true;
     }

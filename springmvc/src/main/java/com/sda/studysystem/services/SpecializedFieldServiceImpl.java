@@ -10,11 +10,12 @@ import java.util.List;
 
 /**
  * Implementation of SpecializedFieldService
+ *
+ * @author VinodJohn
  */
 
 @Service
 public class SpecializedFieldServiceImpl implements SpecializedFieldService {
-
     @Autowired
     private SpecializedFieldRepository specializedFieldRepository;
 
@@ -23,6 +24,8 @@ public class SpecializedFieldServiceImpl implements SpecializedFieldService {
         if (specializedField == null) {
             return false;
         }
+
+        specializedField.setActive(true);
         specializedFieldRepository.save(specializedField);
         return true;
     }
