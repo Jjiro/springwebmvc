@@ -9,8 +9,6 @@ import java.util.List;
 
 /**
  * Implementation of SchoolService
- *
- * @author VinodJohn
  */
 
 @Service

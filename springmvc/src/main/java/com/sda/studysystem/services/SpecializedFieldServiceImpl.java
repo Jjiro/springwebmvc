@@ -10,8 +10,6 @@ import java.util.List;
 
 /**
  * Implementation of SpecializedFieldService
- *
- * @author VinodJohn
  */
 
 @Service

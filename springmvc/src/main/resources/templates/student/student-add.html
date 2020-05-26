@@ -53,6 +53,16 @@
                             <label for="name">Student name</label>
                             <input type="text" th:field="*{name}" class="form-control" id="name" aria-describedby="nameHelp" required>
                         </div>
+                        <div class="form-group">
+                            <label for="school">Select School</label>
+                            <select th:field="*{school.id}" class="custom-select" id="school" required>
+                                <option th:each="school : ${schools}" th:value="${school.id}" th:text="${school.name}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="grade">Grade</label>
+                            <input type="text" th:field="*{name}" class="form-control" id="grade" aria-describedby="nameHelp" required>
+                        </div>
                         <button type="submit" class="btn btn-primary">Add</button>
                         <a href="/student" class="btn btn-success">Cancel</a>
                     </form>

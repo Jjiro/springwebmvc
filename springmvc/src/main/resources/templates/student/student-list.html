@@ -58,6 +58,9 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">School</th>
+                                <th scope="col">Join date</th>
+                                <th scope="col">Grade</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -65,6 +68,9 @@
                             <tr th:each="student : ${students}">
                                 <th scope="row" th:text="${student.id}"></th>
                                 <td th:text="${student.name}"></td>
+                                <td th:text="${student.school}"></td>
+                                <td th:text="${student.joinDate}"></td>
+                                <td th:text="${student.grade}"></td>
                                 <td>
                                     <a th:if="${student.active} == true" th:href="@{/student/update/{id}(id=${student.id})}" class="btn btn-primary">Update</a>
                                     <a th:if="${student.active} == true" th:href="@{/student/delete/{id}(id=${student.id})}" class="btn btn-danger">Delete</a>

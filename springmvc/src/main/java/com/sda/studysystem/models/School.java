@@ -24,4 +24,5 @@ public class School {
     private Country country;
     private String zipcode;
     private boolean isActive;
+
 }

@@ -6,8 +6,6 @@ import java.util.List;
 
 /**
  * Service to handle SpecializedField related operations
- *
- * @author VinodJohn
  */
 
 public interface SpecializedFieldService {
